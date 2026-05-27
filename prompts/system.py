@@ -267,7 +267,7 @@ You have access to the following tools to accomplish your tasks:
    - **MANDATORY order of operations before using `fhir_search`**:
      You MUST follow this sequence in order — never skip steps:
      1. **MCP first**: Use MCP terminology tools to resolve any clinical terms to standard codes.
-        - `medical-terminologies__snomed_search` → conditions/diagnoses
+        - `snomed__mcp_snomed_SemanticSearch` → conditions/diagnoses
         - `medical-terminologies__loinc_search`  → lab tests/observations
         - `medical-terminologies__rxnorm_search` → medications/drugs
         NEVER use web_search for terminology resolution. If MCP tools are unavailable, tell the user.
@@ -278,7 +278,7 @@ You have access to the following tools to accomplish your tasks:
      4. **`fhir_search`**: Only after completing steps 1–3, call `fhir_search` with the resolved codes
         and reverse-chaining parameters.
    - **Finding patients by condition (SNOMED)**:
-     1. MCP: medical-terminologies__snomed_search → get SNOMED code
+     1. MCP: snomed__mcp_snomed_SemanticSearch → get SNOMED code
      2. Search code for existing queries or cached results
      3. Reverse chain: fhir_search(resource_type="Patient", resolved_token="http://snomed.info/sct|<code>",
                     clinical_domain="condition", max_results=200)
@@ -430,20 +430,20 @@ CRITICAL: You are FORBIDDEN from calling `fhir_search` directly. Every FHIR pati
 1. Call the appropriate MCP tool IMMEDIATELY — do NOT check memory, do NOT search the code, do NOT call fhir_search.
 2. Return the result to the user. DONE.
  
-- "show me the code for hypertension" → IMMEDIATELY call `medical-terminologies__snomed_search("hypertension")` → return result. STOP.
-- "show me the code for seizure" → IMMEDIATELY call `medical-terminologies__snomed_search("seizure")` → return result. STOP.
+- "show me the code for hypertension" → IMMEDIATELY call `snomed__mcp_snomed_SemanticSearch(term="hypertension")` → return result. STOP.
+- "show me the code for seizure" → IMMEDIATELY call `snomed__mcp_snomed_SemanticSearch(term="seizure")` → return result. STOP.
 - "look up metformin" → IMMEDIATELY call `medical-terminologies__rxnorm_search("metformin")` → return result. STOP.
  
 Steps 2–4 below apply ONLY to patient search queries (e.g. "list patients with X"), NOT to terminology lookups.
  
 Classify the clinical term:
-- Disease / disorder / diagnosis / illness / syndrome (e.g. "asthma", "seizure", "diabetes", "COPD") → **condition** → call `medical-terminologies__snomed_search`
+- Disease / disorder / diagnosis / illness / syndrome (e.g. "asthma", "seizure", "diabetes", "COPD") → **condition** → call `snomed__mcp_snomed_SemanticSearch`
 - Drug / medication / prescription (e.g. "metformin", "albuterol") → **medication** → call `medical-terminologies__rxnorm_search`
 - Lab / test / measurement / vital (e.g. "HbA1c", "creatinine") → **observation** → call `medical-terminologies__loinc_search`
  
 **Examples of correct auto-detection:**
-- "patients with asthma" → asthma = condition → call `medical-terminologies__snomed_search("asthma")`
-- "show me the code for seizure" → seizure = condition → call `medical-terminologies__snomed_search("seizure")`
+- "patients with asthma" → asthma = condition → call `snomed__mcp_snomed_SemanticSearch(term="asthma")`
+- "show me the code for seizure" → seizure = condition → call `snomed__mcp_snomed_SemanticSearch(term="seizure")`
 - "patients on lisinopril" → lisinopril = medication → call `medical-terminologies__rxnorm_search("lisinopril")`
 - "patients with high HbA1c" → HbA1c = observation → call `medical-terminologies__loinc_search("HbA1c")`
  
@@ -479,7 +479,7 @@ fhir_search(resource_type="Condition", search_params={"code": "asthma"})
  
 **Correct:**
 ```
-# Step 1: snomed_search("asthma") → 195967001
+# Step 1: snomed__mcp_snomed_SemanticSearch(term="asthma") → 195967001
 # Step 2: grep codebase for cached results
 # Step 3+4: reverse chain
 fhir_search(resource_type="Patient", resolved_token="http://snomed.info/sct|195967001",

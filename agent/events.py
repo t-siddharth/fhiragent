@@ -35,7 +35,7 @@ class AgentEvent:
         return cls(type=AgentEventType.AGENT_END, data={"response": response, "usage": usage.__dict__ if usage else None})
     
     @classmethod
-    def agent_error(cls, error: Exception, error_message: str, details: dict[str, Any] | None = None) -> AgentEvent:
+    def agent_error(cls, error_message: str, details: dict[str, Any] | None = None) -> AgentEvent:
         return cls(type=AgentEventType.AGENT_ERROR, data={"error": error_message, "details": details or {}})
     
     @classmethod

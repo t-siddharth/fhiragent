@@ -13,10 +13,8 @@
 
 services:
   ai-agent:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ai-agent:local
+    image: ready/ai-agent
+    container_name: ai-agent
     env_file:
       - .env
     # Resolve "host.docker.internal" to the host, so a FHIR container that publishes :8080 on

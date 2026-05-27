@@ -1,7 +1,10 @@
 hooks_enabled = true
 allowed_tools = ["edit", "fhir_everything", "fhir_read", "fhir_search", "fhir_update", "glob", "list_dir",
 "read_file", "shell", "todos", "web_fetch", "web_search", "write_file", "memory",
-"subagent_fhir_summarizer", "medical-terminologies__snomed_search", "medical-terminologies__loinc_search", "medical-terminologies__rxnorm_search"]
+"subagent_fhir_summarizer", "medical-terminologies__loinc_search", "medical-terminologies__rxnorm_search",
+"snomed__mcp_snomed_LexicalSearch", "snomed__mcp_snomed_SemanticSearch", "snomed__mcp_snomed_SearchByPattern",
+"snomed__mcp_snomed_GetConcept", "snomed__mcp_snomed_GetParents", "snomed__mcp_snomed_GetChildren",
+"snomed__mcp_snomed_GetDescendants", "snomed__mcp_snomed_GetAncestors", "snomed__mcp_snomed_IsA"]
 
 [model]
 name = "gpt-4.1-mini"
@@ -26,9 +29,13 @@ command='python3 ./scripts/test_tool.py'
 
 [mcp_servers.filesystem]
 command = "npx"
-args =['-y', '@modelcontextprotocol/server-filesystem', '/Users/pjamieso/claude/ai-agent', '/tmp']
+args =['-y', '@modelcontextprotocol/server-filesystem', '.', '/tmp']
 
 [mcp_servers.medical-terminologies]
-command = "/opt/homebrew/bin/npx"
+command = "npx"
 args = ["-y", "medical-terminologies-mcp"]
 
+[mcp_servers.snomed]
+command = "node"
+type = "stdio"
+args = ["/Users/pjamieso/ai-agent/snomed-mcp-proxy.mjs"]
